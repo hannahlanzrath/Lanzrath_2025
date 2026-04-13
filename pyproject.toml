@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Lanzrath-2025"
+version = "0.1.0"
+description = "Tracer transport velocity analysis from PET imaging data: companion code for Lanzrath et al. (2025)"
+readme = "README.md"
+license = { text = "GPLv3" }
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Hannah Lanzrath" }
+]
+
+keywords = ["PET", "phloem", "transport velocity", "CADET", "plant imaging"]
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+    "scikit-image",
+    "cadet",
+    "addict",
+    "pymoo",
+    "ipython",
+]
+
+[project.urls]
+Repository = "https://github.com/hannahlanzrath/Lanzrath_2025"
+Paper = "https://doi.org/10.1016/j.mbs.2025.109430"
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["Lanzrath_2025*"]
