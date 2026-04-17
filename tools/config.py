@@ -26,7 +26,7 @@ class ArtificialDataConfig:
     buehler_model_name: str = "M02"
     buehler_model_file: str = "model.h5"
     buehler_gauss_type: str = "stretched"
-    buehler_fit_dt: float = 0.000567 * 60
+    buehler_decay: float = 0.000567 * 60
 
 
 @dataclass(frozen=True)
@@ -45,5 +45,5 @@ class PlantDataConfig:
     mckay_end: float | None = None  # None → derived from t: t[-1]
     mckay_points: int | None = None # None → derived from t: len(t)
 
-    buehler_fit_dt: float = 0.5
+    buehler_decay: float = 0.5
     buehler_gauss_type: str = "stretched"

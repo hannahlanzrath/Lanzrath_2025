@@ -29,7 +29,7 @@ def main() -> None:
         spline_points=400,
         spline_eval_end=150.0,
         spline_plot_end=150.0,
-        buehler_fit_dt=0.5,
+        buehler_decay=0.5,
         buehler_gauss_type="stretched",
     )
 

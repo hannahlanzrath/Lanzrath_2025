@@ -119,7 +119,7 @@ def _set_spline_input(cadet, gauss_t, sol_t, y) -> None:
     cadet.root.input.solver.sections.section_continuity = [1]
 
 
-def generate_gaussian_input(cadet, sol_t, t0, sigma, p4) -> None:
+def generate_gaussian_input(cadet, sol_t, t0, sigma, p4, decay: float = 0.000567 * 60) -> None:
     """Build a Gaussian (or stretched-Gaussian) inlet profile and write it to cadet."""
     width = sol_t[-1]
     sections = 100
@@ -133,7 +133,7 @@ def generate_gaussian_input(cadet, sol_t, t0, sigma, p4) -> None:
             y = np.nan_to_num(np.exp(-0.5 * (np.log(m) / np.log(p4)) ** 2))
 
     # Reverse decay correction — input is assumed to be decay-corrected
-    y_uncorr = y * np.exp(-0.000567 * 60 * gauss_t)
+    y_uncorr = y * np.exp(-decay * gauss_t)
     _set_spline_input(cadet, gauss_t, sol_t, y_uncorr)
 
 
@@ -242,7 +242,7 @@ def adjust_model_parameters(self, p) -> None:
     cadet.root.input.solver.user_solution_times = self.t
     self.t_input_end = int(np.ceil(sigma * 3.5))
 
-    generate_gaussian_input(cadet, self.t, t0, sigma, p4)
+    generate_gaussian_input(cadet, self.t, t0, sigma, p4, self.decay)
 
     if model == "M01":
         cadet.root.input.model.connections.switch_000.connections = [

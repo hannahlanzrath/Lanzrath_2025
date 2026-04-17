@@ -79,7 +79,7 @@ def fit_buehler_model(
     model_name: str = "M02",
     model_file: str = "model.h5",
     p0: list[float] | np.ndarray | None = None,
-    fit_dt: float = 0.000567 * 60,
+    decay: float = 0.000567 * 60,
     gauss_type: str = "stretched",
     normalize_measured: bool = False,
     optimize: bool = False,
@@ -116,7 +116,7 @@ def fit_buehler_model(
         model_name,
         model_file,
         fit_df,
-        fit_dt,
+        decay,
         gauss_type=gauss_type,
     )
 

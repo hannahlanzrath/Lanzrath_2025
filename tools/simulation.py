@@ -41,6 +41,7 @@ class CadetContainer:
         self.model = model
         self.filepath = filepath
         self.gauss_type = gauss_type
+        self.decay = decay
 
         if csv_readout is not None:
             xi, t, exp_data = get_xi_t_and_ROIs(csv_readout, decay_correct=input_data_is_decay_corrected)

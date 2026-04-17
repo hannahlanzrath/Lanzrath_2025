@@ -349,7 +349,7 @@ def analyze_buehler_transport_velocity(
         t: Time vector.
         rois: List of raw (not decay-corrected), globally normalised ROI arrays.
         positions: Spatial positions [mm] of each ROI.
-        config: Configuration object with ``buehler_fit_dt`` and
+        config: Configuration object with ``buehler_decay`` and
             ``buehler_gauss_type`` attributes.
         model_name: CADET model identifier (e.g. ``"M02"``).
         model_file: Path to the CADET model ``.h5`` file.
@@ -370,7 +370,7 @@ def analyze_buehler_transport_velocity(
         model_name=model_name,
         model_file=model_file,
         p0=p0,
-        fit_dt=config.buehler_fit_dt,
+        decay=config.buehler_decay,
         gauss_type=config.buehler_gauss_type,
         normalize_measured=False,
         optimize=optimize,
