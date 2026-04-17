@@ -16,6 +16,8 @@ class BuehlerModelResult:
     reference_times: np.ndarray
     residual_sum_squares: float
     fit_dataframe: pd.DataFrame
+    t_hires: np.ndarray
+    simulated_hires: np.ndarray
 
 
 def _as_time_major_matrix(rois: list[np.ndarray] | np.ndarray) -> np.ndarray:
@@ -132,6 +134,9 @@ def fit_buehler_model(
     reference_times = t[np.argmax(simulated, axis=0)].astype(float)
     rss = float(np.sum((measured - simulated) ** 2))
 
+    t_hires, simulated_hires = simulation.simulate_hires(params_opt)
+    simulated_hires = _ensure_time_major(simulated_hires, n_time=len(t_hires), n_rois=len(positions))
+
     return BuehlerModelResult(
         params_opt=params_opt,
         simulated=simulated,
@@ -139,4 +144,6 @@ def fit_buehler_model(
         reference_times=reference_times,
         residual_sum_squares=rss,
         fit_dataframe=fit_df,
+        t_hires=t_hires,
+        simulated_hires=simulated_hires,
     )

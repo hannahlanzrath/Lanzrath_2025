@@ -139,6 +139,31 @@ class CadetContainer:
         ])
         return calc_data / np.amax(calc_data)
 
+    def simulate_hires(self, p, dt: float = 1.0) -> tuple[np.ndarray, np.ndarray]:
+        """Simulate with a dense time vector for plotting.
+
+        Parameters already set by a preceding ``simulate`` call are reused —
+        only ``user_solution_times`` is swapped. ``self.t`` is not modified so
+        subsequent fit calls are unaffected.
+
+        Returns:
+            t_hires: Dense time vector.
+            calc_data: Simulated ROI signals at ``t_hires``, normalised to 1.
+        """
+        adjust_model_parameters(self, p)
+        self.cadet.root.input.model.unit_002.discretization.ncol = self.ncol
+        self.shift_xi(self.ncol)
+        t_hires = np.arange(self.t[0], self.t[-1] + dt, dt)
+        self.cadet.root.input.solver.user_solution_times = t_hires
+        self.run()
+        self.cadet.root.input.solver.user_solution_times = self.t
+        cb = self.cadet.root.output.solution.unit_002.solution_bulk
+        calc_data = np.hstack([
+            np.array([np.sum(cb[:, :, :, 0], axis=2)[:, x]]).T
+            for x in self.xi_shifted
+        ])
+        return t_hires, calc_data / np.amax(calc_data)
+
     # ── Residual functions ────────────────────────────────────────────────────
 
     def _residual_normed(self, p_norm) -> np.ndarray:
@@ -241,19 +266,31 @@ class CadetContainer:
         if self._live_iter % self.live_plot_every != 0:
             return
 
+        # Re-run with dense time vector for display; does not affect the fit.
+        t_hires = np.arange(self.t[0], self.t[-1] + 1.0, 1.0)
+        self.cadet.root.input.solver.user_solution_times = t_hires
+        self.run()
+        self.cadet.root.input.solver.user_solution_times = self.t
+
         cb = self.cadet.root.output.solution.unit_002.solution_bulk
+        cb_sum = np.sum(cb[:, :, :, 0], axis=2)
+        calc_data_hires = np.hstack([
+            np.array([cb_sum[:, x]]).T for x in self.xi_shifted
+        ])
+        calc_data_hires = calc_data_hires / np.amax(calc_data_hires)
+
         ax1, ax2, ax3 = self._live_axes
         ax1.clear(); ax2.clear(); ax3.clear()
 
         velocity = float(p[0]) if len(p) > 0 else np.nan
-        ax1.plot(self.t, calc_data, label="Calc")
+        ax1.plot(t_hires, calc_data_hires, label="Calc")
         ax1.plot(self.t, experimental_data, ".", label="Exp")
         ax1.set_xlabel("Time [min]")
         ax1.set_ylabel("Activity [a.u.]")
         ax1.set_title(f"v = {velocity:.5f}")
         ax1.legend()
 
-        ax2.imshow(np.sum(cb[:, :, :, 0], axis=2).T, cmap="viridis", aspect="auto")
+        ax2.imshow(cb_sum.T, cmap="viridis", aspect="auto")
         for x in self.xi_shifted:
             ax2.axhline(x, color="orange")
         ax2.set_title("Bulk signal")

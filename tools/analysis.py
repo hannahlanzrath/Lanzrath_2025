@@ -379,9 +379,9 @@ def analyze_buehler_transport_velocity(
     velocity = float(result.params_opt[0])
 
     _setup_activity_plot()
-    for i in range(result.simulated.shape[1]):
+    for i in range(result.simulated_hires.shape[1]):
         label = "Bühler model" if i == 0 else None
-        plt.plot(t, result.simulated[:, i], color="k", linewidth=1, label=label)
+        plt.plot(result.t_hires, result.simulated_hires[:, i], color="k", linewidth=1, label=label)
     _plot_roi_points(t, rois)
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
